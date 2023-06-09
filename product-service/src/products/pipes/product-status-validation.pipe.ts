@@ -8,7 +8,6 @@ export class ProductStatusValidationPipes implements PipeTransform {
     let val = value.status;
     if (val) {
       val = val.toUpperCase();
-      console.log('val ', val.toUpperCase());
       if (!this.isValidStatus(val)) {
         throw new BadRequestException({
           statusCode: 400,

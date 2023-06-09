@@ -11,50 +11,26 @@ import { ProductRepository } from './product.repository';
 @Injectable()
 export class ProductsService {
   constructor(
-    @InjectRepository(Product)
+    @InjectRepository(ProductRepository)
     public productRepository: ProductRepository,
   ) {}
 
   async findAll(filterDto: SearchProductDto): Promise<Product[]> {
-    const { status, search } = filterDto;
-    const query = this.productRepository.createQueryBuilder('product');
-
-    if (status) {
-      query.andWhere('product.status = :status', { status });
-    }
-    if (search) {
-      query.andWhere(
-        '(product.name LIKE :search OR product.sku LIKE :search)',
-        {
-          search: `%${search}%`,
-        },
-      );
-    }
-
-    const products = await query.getMany();
-
-    return products;
+    return this.productRepository.getProducts(filterDto);
   }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    return ProductRepository.createProducts(createProductDto);
+    return this.productRepository.createProducts(createProductDto);
   }
 
   async findOne(id: number): Promise<Product> {
-    const product = await this.productRepository.findOne({ where: { id } });
-    if (!product) {
-      throw new NotFoundException({
-        statusCode: 404,
-        message: `Product not found with ${id}`,
-      });
-    }
-    return product;
+    return this.productRepository.getProduct(id);
   }
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    return ProductRepository.updateProduct(id, updateProductDto);
+    return this.productRepository.updateProduct(id, updateProductDto);
   }
 
   async remove(id: number): Promise<void> {
