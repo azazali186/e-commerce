@@ -70,7 +70,10 @@ export class UserRepository extends Repository<User> {
       const token = await this.jwtService.signAsync(payload, {
         secret: `${process.env.JWT_SECRET}`,
       });
-      return { ...others, token: token };
+      return {
+        ...others,
+        token: AES.encrypt(token, process.env.ENCRYPTION_KEY_TOKEN).toString(),
+      };
     }
 
     throw new NotFoundException({
